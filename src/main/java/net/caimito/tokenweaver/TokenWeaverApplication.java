@@ -1,4 +1,4 @@
-package net.caimito.token_weaver;
+package net.caimito.tokenweaver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
