@@ -76,6 +76,11 @@
 			<name>GitHub Packages</name>
 			<url>https://maven.pkg.github.com/caimito/token-weaver</url>
 		</repository>
+		<snapshotRepository>
+			<id>github</id>
+			<name>GitHub Snapshot Repository</name>
+			<url>https://maven.pkg.github.com/caimito/token-weaver</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<build>
