@@ -47,9 +47,20 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git checkout -b version-increment
         git add pom.xml
         git commit -m "Increment version to ${{ env.new_version }}"
-        git push
+        git push origin version-increment
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: version-increment
+        title: "Increment version to ${{ env.new_version }}"
+        body: "This PR increments the version number to ${{ env.new_version }}."
+        base: main
+        delete-branch: true
 
     - name: Build with Maven
       run: mvn clean install
