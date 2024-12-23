@@ -41,3 +41,9 @@ jobs:
       run: mvn deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build Maven Site
+      run: mvn site
+
+    - name: Deploy Maven Site
+      run: mvn deploy:deploy-site
