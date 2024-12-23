@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.caimito</groupId>
 	<artifactId>token-weaver</artifactId>
-	<version>0.0.7</version>
+	<version>0.0.8</version>
 	<name>Token Weaver</name>
 	<description>Magic Link and Access Token library for Java and Spring</description>
 	<url />
@@ -92,9 +92,21 @@
 				<version>3.21.0</version>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>maven-git-commit-id-plugin</artifactId>
-				<version>2.2.2</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>3.1.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+						<phase>deploy</phase>
+						<configuration>
+							<repositoryId>github-pages</repositoryId>
+							<url>https://github.com/username/repository-name/tree/gh-pages</url>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
