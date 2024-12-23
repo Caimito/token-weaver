@@ -21,7 +21,8 @@ public class AccountService {
 
   /**
    * Creates a new account with the given email address. If the email address is
-   * already known, an exception is thrown.
+   * already known, an exception is thrown. The account is locked until the user
+   * verifies their email address.
    * 
    * @param email
    * @return the new account
@@ -35,6 +36,12 @@ public class AccountService {
     return accountPrincipalRepository.save(accountPrincipal);
   }
 
+  /**
+   * Finds an account by email address.
+   * 
+   * @param email
+   * @return the account, if found
+   */
   public Optional<AccountPrincipal> findAccount(String email) {
     return accountPrincipalRepository.findByEmail(email);
   }
@@ -53,15 +60,44 @@ public class AccountService {
     }
   }
 
-  public void verifyEmail(String magicId, LocalDateTime now) {
+  /**
+   * Verifies the email address of the account with the given magicId. If the
+   * magic ID is not found, an exception is thrown. If the magic ID is expired,
+   * an exception is thrown. If the magic ID is found and not expired, the email
+   * address is verified and an access token is returned.
+   * 
+   * @param magicId
+   * @param now     - current date and time
+   */
+  public AccessToken verifyEmail(String magicId, LocalDateTime now) {
     Optional<AccountPrincipal> ap = findByMagicId(magicId, now);
     if (ap.isPresent()) {
       AccountPrincipal accountPrincipal = ap.get();
       accountPrincipal.setEmailVerified(now);
-      accountPrincipalRepository.save(accountPrincipal);
+      AccountPrincipal savedAccountPrincipal = accountPrincipalRepository.save(accountPrincipal);
+
+      return generateAccessToken(savedAccountPrincipal);
     } else {
-      LOGGER.warn("Account principal not found by magic id {}", magicId);
+      throw new AccountNotFoundByMagicIdException(magicId);
     }
+  }
+
+  /**
+   * Sends a magic link to the account principal.
+   * 
+   * @param accountPrincipal
+   * @param magicLinkSender
+   */
+  public void sendMagicLink(AccountPrincipal accountPrincipal, MagicLinkSender magicLinkSender) {
+    magicLinkSender.deliver(accountPrincipal.getEmail(), accountPrincipal.getMagicId());
+  }
+
+  public AccessToken generateAccessToken(AccountPrincipal accountPrincipal) {
+    if (!accountPrincipal.isEmailVerified()) {
+      throw new AccountNotVerifiedException(accountPrincipal.getEmail());
+    }
+
+    return new AccessToken();
   }
 
 }
