@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.caimito</groupId>
 	<artifactId>token-weaver</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>Token Weaver</name>
 	<description>Magic Link and Access Token library for Java and Spring</description>
 	<url />
@@ -81,6 +81,11 @@
 				<configuration>
 					<generateBackupPoms>false</generateBackupPoms>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.21.0</version>
 			</plugin>
 		</plugins>
 	</build>
