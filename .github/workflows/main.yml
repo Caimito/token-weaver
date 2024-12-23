@@ -43,7 +43,9 @@ jobs:
       run: mvn site
 
     - name: Deploy Maven Site
-      run: mvn deploy:deploy-site
+      run: mvn scm-publish:publish-scm
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Increment version
       id: increment_version
