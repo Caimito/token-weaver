@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.caimito</groupId>
 	<artifactId>token-weaver</artifactId>
-	<version>0.0.10</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>Token Weaver</name>
 	<description>Magic Link and Access Token library for Java and Spring</description>
 	<url />
