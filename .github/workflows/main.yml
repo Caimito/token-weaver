@@ -33,14 +33,25 @@ jobs:
     - name: Build with Maven
       run: mvn clean install
 
-    # - name: Publish to GitHub Packages
-    #   if: github.event_name == 'push'
-    #   run: mvn deploy
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish to GitHub Packages
+      if: github.event_name == 'push'
+      run: mvn deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Deploy Maven Site
-      run: mvn site site:deploy
+    - name: Build Maven Site
+      run: mvn site
+
+    - name: Deploy to GitHub Pages
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git clone --branch gh-pages https://github.com/caimito/token-weaver.git gh-pages
+        rsync -av --delete target/site/ gh-pages/
+        cd gh-pages
+        git add .
+        git commit -m "Deploy site to GitHub Pages"
+        git push origin gh-pages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
