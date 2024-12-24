@@ -33,11 +33,11 @@ jobs:
     - name: Build with Maven
       run: mvn clean install
 
-    - name: Publish to GitHub Packages
-      if: github.event_name == 'push'
-      run: mvn deploy
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Publish to GitHub Packages
+    #   if: github.event_name == 'push'
+    #   run: mvn deploy
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build Maven Site
       run: mvn site
