@@ -24,6 +24,10 @@ public class JWTProvider {
     this.algorithm = Algorithm.HMAC256(secret);
   }
 
+  public String getAccessTokenName() {
+    return ACCESS_TOKEN_NAME;
+  }
+
   public AccessToken generateAccessToken(String username) {
     long expiresInSeconds = 86400 * expirationDays;
 
