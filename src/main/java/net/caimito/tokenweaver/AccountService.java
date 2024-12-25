@@ -19,6 +19,9 @@ public class AccountService {
   @Autowired
   private AccountPrincipalRepository accountPrincipalRepository;
 
+  @Autowired
+  private JWTProvider jwtProvider;
+
   /**
    * Creates a new account with the given email address. If the email address is
    * already known, an exception is thrown. The account is locked until the user
@@ -105,7 +108,7 @@ public class AccountService {
       throw new AccountNotVerifiedException(accountPrincipal.getEmail());
     }
 
-    return new AccessToken();
+    return new AccessToken(jwtProvider.generateAccessToken(accountPrincipal.getId()));
   }
 
   public void updateAccount(AccountPrincipal<?> accountPrincipal) {

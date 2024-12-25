@@ -1,0 +1,6 @@
+token-weaver:
+  token:
+    secret: "s3cr3tK3yForJWTt0k3n"
+    expire-days: 5
+    name: "access_token"
+    
