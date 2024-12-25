@@ -165,4 +165,33 @@ public class AccountServiceTests {
         });
   }
 
+  @Test
+  void updateAccount() {
+    AccountPrincipal<AdditionalInformation> accountPrincipal = accountService.createAccount("joe@example.com",
+        AdditionalInformation.class);
+
+    accountPrincipal.getAdditionalInformation().setSomeValue("value");
+    accountPrincipalRepository.save(accountPrincipal);
+
+    Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
+        .findAccount("joe@example.com");
+    assertThat(foundAccountPrincipal)
+        .isPresent()
+        .get()
+        .satisfies(ap -> {
+          assertThat(ap.getAdditionalInformation().getSomeValue()).isEqualTo("value");
+        });
+
+    accountPrincipal.getAdditionalInformation().setSomeValue("new value");
+    accountService.updateAccount(accountPrincipal);
+
+    foundAccountPrincipal = accountService.findAccount("joe@example.com");
+    assertThat(foundAccountPrincipal)
+        .isPresent()
+        .get()
+        .satisfies(ap -> {
+          assertThat(ap.getAdditionalInformation().getSomeValue()).isEqualTo("new value");
+        });
+  }
+
 }

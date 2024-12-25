@@ -108,4 +108,8 @@ public class AccountService {
     return new AccessToken();
   }
 
+  public void updateAccount(AccountPrincipal<?> accountPrincipal) {
+    accountPrincipalRepository.save(accountPrincipal);
+  }
+
 }
