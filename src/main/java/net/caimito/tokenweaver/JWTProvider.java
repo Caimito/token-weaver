@@ -12,13 +12,13 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 @Component
 public class JWTProvider {
-  @Value("${token-weaver.token.expire-days}")
+  @Value("${token-weaver.token.expire-days:5}")
   private int expirationDays;
 
-  public final long JWT_EXPIRATION = 86400 * expirationDays;
+  public long JWT_EXPIRATION = 86400 * expirationDays;
 
-  @Value("${token-weaver.token.name}")
-  public final String ACCESS_TOKEN_NAME = "access_token";
+  @Value("${token-weaver.token.name:access_token}")
+  public String ACCESS_TOKEN_NAME;
 
   private final Algorithm algorithm;
 
