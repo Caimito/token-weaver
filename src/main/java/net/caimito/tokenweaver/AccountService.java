@@ -108,7 +108,7 @@ public class AccountService {
       throw new AccountNotVerifiedException(accountPrincipal.getEmail());
     }
 
-    return new AccessToken(jwtProvider.generateAccessToken(accountPrincipal.getId()));
+    return jwtProvider.generateAccessToken(accountPrincipal.getId());
   }
 
   public void updateAccount(AccountPrincipal<?> accountPrincipal) {

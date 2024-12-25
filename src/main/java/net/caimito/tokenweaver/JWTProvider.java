@@ -15,7 +15,7 @@ public class JWTProvider {
   @Value("${token-weaver.token.expire-days}")
   private int expirationDays;
 
-  public final long JWT_EXPIRATION = 86400 * 1000 * expirationDays;
+  public final long JWT_EXPIRATION = 86400 * expirationDays;
 
   @Value("${token-weaver.token.name}")
   public final String ACCESS_TOKEN_NAME = "access_token";
@@ -26,21 +26,25 @@ public class JWTProvider {
     this.algorithm = Algorithm.HMAC256(secret);
   }
 
-  public String generateAccessToken(String username) {
-    return JWT.create()
+  public AccessToken generateAccessToken(String username) {
+    String jwt = JWT.create()
         .withSubject(username)
         .withIssuedAt(new Date())
         .withExpiresAt(Date.from(Instant.now().plusSeconds(JWT_EXPIRATION)))
         .sign(algorithm);
+
+    return new AccessToken(jwt, ACCESS_TOKEN_NAME, JWT_EXPIRATION);
   }
 
-  public String generateRefreshToken(String username) {
-    return JWT.create()
+  public AccessToken generateRefreshToken(String username) {
+    String jwt = JWT.create()
         .withSubject(username)
         .withClaim("type", "refresh")
         .withIssuedAt(new Date())
         .withExpiresAt(Date.from(Instant.now().plusSeconds(JWT_EXPIRATION)))
         .sign(algorithm);
+
+    return new AccessToken(jwt, ACCESS_TOKEN_NAME, JWT_EXPIRATION);
   }
 
   public boolean validateToken(String token) {
