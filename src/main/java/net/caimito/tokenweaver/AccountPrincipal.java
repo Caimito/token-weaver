@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "accountPrincipals")
-public class AccountPrincipal {
+public class AccountPrincipal<T> {
 
   @Id
   private String id;
@@ -21,6 +21,8 @@ public class AccountPrincipal {
 
   private LocalDateTime magicIdCreated;
   private LocalDateTime emailVerified;
+
+  private T additionalInformation;
 
   @SuppressWarnings("unused")
   private AccountPrincipal() {
@@ -58,6 +60,14 @@ public class AccountPrincipal {
 
   public boolean isEmailVerified() {
     return emailVerified != null;
+  }
+
+  public T getAdditionalInformation() {
+    return additionalInformation;
+  }
+
+  public void setAdditionalInformation(T additionalInformation) {
+    this.additionalInformation = additionalInformation;
   }
 
 }

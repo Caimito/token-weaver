@@ -25,14 +25,15 @@ public class AccountService {
    * verifies their email address.
    * 
    * @param email
+   * @param additionalInformationClass
    * @return the new account
    */
-  public AccountPrincipal createAccount(String email) {
+  public <T> AccountPrincipal<T> createAccount(String email, Class<T> additionalInformationClass) {
     findAccount(email).ifPresent(ap -> {
       throw new AccountAlreadyExistsException(String.format("Account with email '%s' already exists", email));
     });
 
-    AccountPrincipal accountPrincipal = new AccountPrincipal(email);
+    AccountPrincipal<T> accountPrincipal = new AccountPrincipal<>(email);
     return accountPrincipalRepository.save(accountPrincipal);
   }
 
@@ -42,14 +43,16 @@ public class AccountService {
    * @param email
    * @return the account, if found
    */
-  public Optional<AccountPrincipal> findAccount(String email) {
-    return accountPrincipalRepository.findByEmail(email);
+  @SuppressWarnings("unchecked")
+  public <T> Optional<AccountPrincipal<T>> findAccount(String email) {
+    return accountPrincipalRepository.findByEmail(email)
+        .map(ap -> (AccountPrincipal<T>) ap);
   }
 
-  private Optional<AccountPrincipal> findByMagicId(String magicId, LocalDateTime now) {
-    Optional<AccountPrincipal> ap = accountPrincipalRepository.findByMagicId(magicId);
+  private Optional<AccountPrincipal<?>> findByMagicId(String magicId, LocalDateTime now) {
+    Optional<AccountPrincipal<?>> ap = accountPrincipalRepository.findByMagicId(magicId);
     if (ap.isPresent()) {
-      AccountPrincipal accountPrincipal = ap.get();
+      AccountPrincipal<?> accountPrincipal = ap.get();
       if (accountPrincipal.getMagicIdCreated().isBefore(now.minusDays(magicIdTimeoutDays))) {
         throw new MagicIdExpiredException(String.format("Magic ID expired %s", accountPrincipal.getMagicIdCreated()));
       } else {
@@ -70,11 +73,11 @@ public class AccountService {
    * @param now     - current date and time
    */
   public AccessToken verifyEmail(String magicId, LocalDateTime now) {
-    Optional<AccountPrincipal> ap = findByMagicId(magicId, now);
+    Optional<AccountPrincipal<?>> ap = findByMagicId(magicId, now);
     if (ap.isPresent()) {
-      AccountPrincipal accountPrincipal = ap.get();
+      AccountPrincipal<?> accountPrincipal = ap.get();
       accountPrincipal.setEmailVerified(now);
-      AccountPrincipal savedAccountPrincipal = accountPrincipalRepository.save(accountPrincipal);
+      AccountPrincipal<?> savedAccountPrincipal = accountPrincipalRepository.save(accountPrincipal);
 
       return generateAccessToken(savedAccountPrincipal);
     } else {
@@ -88,11 +91,11 @@ public class AccountService {
    * @param accountPrincipal
    * @param magicLinkSender
    */
-  public void sendMagicLink(AccountPrincipal accountPrincipal, MagicLinkSender magicLinkSender) {
+  public void sendMagicLink(AccountPrincipal<?> accountPrincipal, MagicLinkSender magicLinkSender) {
     magicLinkSender.deliver(accountPrincipal.getEmail(), accountPrincipal.getMagicId());
   }
 
-  public AccessToken generateAccessToken(AccountPrincipal accountPrincipal) {
+  public AccessToken generateAccessToken(AccountPrincipal<?> accountPrincipal) {
     if (!accountPrincipal.isEmailVerified()) {
       throw new AccountNotVerifiedException(accountPrincipal.getEmail());
     }

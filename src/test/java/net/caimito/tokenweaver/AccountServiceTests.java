@@ -32,7 +32,7 @@ public class AccountServiceTests {
 
   @Test
   void createTimeLockedAccount() {
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     assertThat(accountPrincipalRepository.count()).isEqualTo(1);
     assertThat(accountPrincipal)
@@ -48,24 +48,26 @@ public class AccountServiceTests {
 
   @Test
   void emailAlreadyExists() {
-    accountService.createAccount("joe@example.com");
+    accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
-    assertThatThrownBy(() -> accountService.createAccount("joe@example.com"))
+    assertThatThrownBy(() -> accountService.createAccount("joe@example.com", AdditionalInformation.class))
         .isInstanceOf(AccountAlreadyExistsException.class);
   }
 
   @Test
   void unknownAccount() {
-    Optional<AccountPrincipal> foundAccountPrincipal = accountService.findAccount("unknown@example.com");
+    Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
+        .findAccount("unknown@example.com");
     assertThat(foundAccountPrincipal)
         .isEmpty();
   }
 
   @Test
   void findAccount() {
-    accountService.createAccount("joe@example.com");
+    accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
-    Optional<AccountPrincipal> foundAccountPrincipal = accountService.findAccount("joe@example.com");
+    Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
+        .findAccount("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()
@@ -79,7 +81,7 @@ public class AccountServiceTests {
   @Test
   void expiredMagicIdVerifyEmail() {
     LocalDateTime now = LocalDateTime.now().plusDays(10);
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     assertThatThrownBy(() -> accountService.verifyEmail(accountPrincipal.getMagicId(), now))
         .isInstanceOf(MagicIdExpiredException.class);
@@ -88,11 +90,12 @@ public class AccountServiceTests {
   @Test
   void verifyEmail() {
     LocalDateTime now = LocalDateTime.now().plusHours(2);
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     accountService.verifyEmail(accountPrincipal.getMagicId(), now);
 
-    Optional<AccountPrincipal> foundAccountPrincipal = accountService.findAccount("joe@example.com");
+    Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
+        .findAccount("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()
@@ -105,7 +108,7 @@ public class AccountServiceTests {
   @Test
   void verifyEmailAndReceiveAccessToken() {
     LocalDateTime now = LocalDateTime.now().plusHours(2);
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     assertThat(accountService.verifyEmail(accountPrincipal.getMagicId(), now))
         .isNotNull();
@@ -113,7 +116,7 @@ public class AccountServiceTests {
 
   @Test
   void deliverMagicId() {
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     accountService.sendMagicLink(accountPrincipal, new MagicLinkSender() {
       @Override
@@ -126,7 +129,7 @@ public class AccountServiceTests {
 
   @Test
   void lockedAccountCannotCreateJWT() {
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     assertThatThrownBy(() -> accountService.generateAccessToken(accountPrincipal))
         .isInstanceOf(AccountNotVerifiedException.class);
@@ -134,12 +137,29 @@ public class AccountServiceTests {
 
   @Test
   void createJWT() {
-    AccountPrincipal accountPrincipal = accountService.createAccount("joe@example.com");
+    AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
     accountService.verifyEmail(accountPrincipal.getMagicId(), LocalDateTime.now());
 
     AccessToken token = accountService.generateAccessToken(accountService.findAccount("joe@example.com").get());
     assertThat(token)
         .isNotNull();
+  }
+
+  @Test
+  void storeReadAdditionalInformation() {
+    AccountPrincipal<AdditionalInformation> accountPrincipal = accountService.createAccount("joe@example.com",
+        AdditionalInformation.class);
+    accountPrincipal.setAdditionalInformation(new AdditionalInformation("value"));
+    accountPrincipalRepository.save(accountPrincipal);
+
+    Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
+        .findAccount("joe@example.com");
+    assertThat(foundAccountPrincipal)
+        .isPresent()
+        .get()
+        .satisfies(ap -> {
+          assertThat(ap.getAdditionalInformation().getSomeValue()).isEqualTo("value");
+        });
   }
 
 }
