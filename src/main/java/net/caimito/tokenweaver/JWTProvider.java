@@ -15,8 +15,6 @@ public class JWTProvider {
   @Value("${token-weaver.token.expire-days:5}")
   private int expirationDays;
 
-  public long JWT_EXPIRATION = 86400 * expirationDays;
-
   @Value("${token-weaver.token.name:access_token}")
   public String ACCESS_TOKEN_NAME;
 
@@ -27,24 +25,28 @@ public class JWTProvider {
   }
 
   public AccessToken generateAccessToken(String username) {
+    long expiresInSeconds = 86400 * expirationDays;
+
     String jwt = JWT.create()
         .withSubject(username)
         .withIssuedAt(new Date())
-        .withExpiresAt(Date.from(Instant.now().plusSeconds(JWT_EXPIRATION)))
+        .withExpiresAt(Date.from(Instant.now().plusSeconds(expiresInSeconds)))
         .sign(algorithm);
 
-    return new AccessToken(jwt, ACCESS_TOKEN_NAME, JWT_EXPIRATION);
+    return new AccessToken(jwt, ACCESS_TOKEN_NAME, expiresInSeconds);
   }
 
   public AccessToken generateRefreshToken(String username) {
+    long expiresInSeconds = 86400 * expirationDays;
+
     String jwt = JWT.create()
         .withSubject(username)
         .withClaim("type", "refresh")
         .withIssuedAt(new Date())
-        .withExpiresAt(Date.from(Instant.now().plusSeconds(JWT_EXPIRATION)))
+        .withExpiresAt(Date.from(Instant.now().plusSeconds(expiresInSeconds)))
         .sign(algorithm);
 
-    return new AccessToken(jwt, ACCESS_TOKEN_NAME, JWT_EXPIRATION);
+    return new AccessToken(jwt, ACCESS_TOKEN_NAME, expiresInSeconds);
   }
 
   public boolean validateToken(String token) {
