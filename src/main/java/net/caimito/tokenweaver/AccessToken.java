@@ -24,4 +24,11 @@ public class AccessToken {
     return expiresInSeconds;
   }
 
+  @Override
+  public String toString() {
+    return "AccessToken [tokenValue=" + tokenValue + ", tokenName=" + tokenName + ", expiresInSeconds="
+        + expiresInSeconds
+        + "]";
+  }
+
 }
