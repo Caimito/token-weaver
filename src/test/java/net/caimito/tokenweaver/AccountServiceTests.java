@@ -149,7 +149,10 @@ public class AccountServiceTests {
   void storeReadAdditionalInformation() {
     AccountPrincipal<AdditionalInformation> accountPrincipal = accountService.createAccount("joe@example.com",
         AdditionalInformation.class);
-    accountPrincipal.setAdditionalInformation(new AdditionalInformation("value"));
+
+    assertThat(accountPrincipal.getAdditionalInformation()).isNotNull();
+
+    accountPrincipal.getAdditionalInformation().setSomeValue("value");
     accountPrincipalRepository.save(accountPrincipal);
 
     Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService

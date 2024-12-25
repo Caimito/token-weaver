@@ -34,6 +34,11 @@ public class AccountService {
     });
 
     AccountPrincipal<T> accountPrincipal = new AccountPrincipal<>(email);
+    try {
+      accountPrincipal.setAdditionalInformation(additionalInformationClass.getDeclaredConstructor().newInstance());
+    } catch (Exception e) {
+      LOGGER.error("Error creating additional information", e);
+    }
     return accountPrincipalRepository.save(accountPrincipal);
   }
 
