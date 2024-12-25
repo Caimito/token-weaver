@@ -44,7 +44,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             accountPrincipalRepository.findById(username).ifPresent(accountPrincipal -> {
               UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                  accountPrincipal.getMagicId(),
+                  accountPrincipal.getId(),
                   null,
                   List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
