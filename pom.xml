@@ -30,6 +30,10 @@
 		<tag>HEAD</tag>
 		<url>https://github.com/caimito/token-weaver</url>
 	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/caimito/token-weaver/issues</url>
+	</issueManagement>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -144,6 +148,9 @@
 						<reports>
 							<report>index</report>
 							<report>summary</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>source-repository</report>
 						</reports>
 					</reportSet>
 				</reportSets>
