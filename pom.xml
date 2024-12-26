@@ -148,7 +148,7 @@
 						<reports>
 							<report>index</report>
 							<report>summary</report>
-							<report>issue-tracking</report>
+							<report>issue-management</report>
 							<report>license</report>
 							<report>source-repository</report>
 						</reports>
