@@ -149,8 +149,11 @@
 							<report>index</report>
 							<report>summary</report>
 							<report>issue-management</report>
-							<report>license</report>
+							<report>licenses</report>
 							<report>source-repository</report>
+							<report>dependency-info</report>
+							<report>distribution-management</report>
+							<report>scm</report>
 						</reports>
 					</reportSet>
 				</reportSets>
