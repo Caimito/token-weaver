@@ -57,7 +57,7 @@ public class AccountServiceTests {
   @Test
   void unknownAccount() {
     Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
-        .findAccount("unknown@example.com");
+        .findAccountByEmail("unknown@example.com");
     assertThat(foundAccountPrincipal)
         .isEmpty();
   }
@@ -67,7 +67,7 @@ public class AccountServiceTests {
     accountService.createAccount("joe@example.com", AdditionalInformation.class);
 
     Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
-        .findAccount("joe@example.com");
+        .findAccountByEmail("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()
@@ -75,6 +75,29 @@ public class AccountServiceTests {
           assertThat(ap.getEmail()).isEqualTo("joe@example.com");
           assertThat(ap.getMagicId()).isNotNull();
           assertThat(ap.getMagicIdCreated()).isBefore(LocalDateTime.now());
+          assertThat(ap.getAdditionalInformation())
+              .isNotNull()
+              .isInstanceOf(AdditionalInformation.class);
+        });
+  }
+
+  @Test
+  void findAccountById() {
+    AccountPrincipal<AdditionalInformation> accountSaved = accountService.createAccount("joe@example.com",
+        AdditionalInformation.class);
+
+    Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
+        .findAccountById(accountSaved.getId());
+    assertThat(foundAccountPrincipal)
+        .isPresent()
+        .get()
+        .satisfies(ap -> {
+          assertThat(ap.getEmail()).isEqualTo("joe@example.com");
+          assertThat(ap.getMagicId()).isNotNull();
+          assertThat(ap.getMagicIdCreated()).isBefore(LocalDateTime.now());
+          assertThat(ap.getAdditionalInformation())
+              .isNotNull()
+              .isInstanceOf(AdditionalInformation.class);
         });
   }
 
@@ -95,7 +118,7 @@ public class AccountServiceTests {
     accountService.verifyEmail(accountPrincipal.getMagicId(), now);
 
     Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
-        .findAccount("joe@example.com");
+        .findAccountByEmail("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()
@@ -140,7 +163,7 @@ public class AccountServiceTests {
     AccountPrincipal<?> accountPrincipal = accountService.createAccount("joe@example.com", AdditionalInformation.class);
     accountService.verifyEmail(accountPrincipal.getMagicId(), LocalDateTime.now());
 
-    AccessToken token = accountService.generateAccessToken(accountService.findAccount("joe@example.com").get());
+    AccessToken token = accountService.generateAccessToken(accountService.findAccountByEmail("joe@example.com").get());
     assertThat(token)
         .isNotNull();
   }
@@ -156,7 +179,7 @@ public class AccountServiceTests {
     accountPrincipalRepository.save(accountPrincipal);
 
     Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
-        .findAccount("joe@example.com");
+        .findAccountByEmail("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()
@@ -174,7 +197,7 @@ public class AccountServiceTests {
     accountPrincipalRepository.save(accountPrincipal);
 
     Optional<AccountPrincipal<AdditionalInformation>> foundAccountPrincipal = accountService
-        .findAccount("joe@example.com");
+        .findAccountByEmail("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()
@@ -185,7 +208,7 @@ public class AccountServiceTests {
     accountPrincipal.getAdditionalInformation().setSomeValue("new value");
     accountService.updateAccount(accountPrincipal);
 
-    foundAccountPrincipal = accountService.findAccount("joe@example.com");
+    foundAccountPrincipal = accountService.findAccountByEmail("joe@example.com");
     assertThat(foundAccountPrincipal)
         .isPresent()
         .get()

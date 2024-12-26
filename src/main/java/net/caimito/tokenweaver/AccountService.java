@@ -32,7 +32,7 @@ public class AccountService {
    * @return the new account
    */
   public <T> AccountPrincipal<T> createAccount(String email, Class<T> additionalInformationClass) {
-    findAccount(email).ifPresent(ap -> {
+    findAccountByEmail(email).ifPresent(ap -> {
       throw new AccountAlreadyExistsException(String.format("Account with email '%s' already exists", email));
     });
 
@@ -52,9 +52,20 @@ public class AccountService {
    * @return the account, if found
    */
   @SuppressWarnings("unchecked")
-  public <T> Optional<AccountPrincipal<T>> findAccount(String email) {
+  public <T> Optional<AccountPrincipal<T>> findAccountByEmail(String email) {
     return accountPrincipalRepository.findByEmail(email)
         .map(ap -> (AccountPrincipal<T>) ap);
+  }
+
+  /**
+   * Finds an account by ID.
+   * 
+   * @param id
+   * @return the account, if found
+   */
+  @SuppressWarnings("unchecked")
+  public <T> Optional<AccountPrincipal<T>> findAccountById(String id) {
+    return accountPrincipalRepository.findById(id).map(ap -> (AccountPrincipal<T>) ap);
   }
 
   private Optional<AccountPrincipal<?>> findByMagicId(String magicId, LocalDateTime now) {

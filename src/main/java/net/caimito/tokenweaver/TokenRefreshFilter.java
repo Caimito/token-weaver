@@ -2,6 +2,8 @@ package net.caimito.tokenweaver;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class TokenRefreshFilter extends OncePerRequestFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TokenRefreshFilter.class);
 
   @Autowired
   private JWTProvider jwtProvider;
@@ -41,6 +44,9 @@ public class TokenRefreshFilter extends OncePerRequestFilter {
                 .maxAge(newToken.getExpiresInSeconds())
                 .build();
             response.setHeader(HttpHeaders.SET_COOKIE, refreshedCookie.toString());
+            LOGGER.debug("Refreshed token for {}", username);
+          } else {
+            LOGGER.warn("Invalid token {}", token);
           }
         }
       }

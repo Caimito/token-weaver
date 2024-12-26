@@ -40,8 +40,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
           String token = cookie.getValue();
           if (jwtProvider.validateToken(token)) {
             String username = jwtProvider.getUsernameFromToken(token);
-            LOGGER.debug("username {}", username);
-
             accountPrincipalRepository.findById(username).ifPresent(accountPrincipal -> {
               UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                   accountPrincipal.getId(),
@@ -50,6 +48,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
               // TODO make role configurable
 
               SecurityContextHolder.getContext().setAuthentication(authToken);
+              LOGGER.debug("Authenticated {} with authorities {}", authToken.getPrincipal(),
+                  authToken.getAuthorities());
             });
           }
         }
