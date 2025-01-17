@@ -68,20 +68,6 @@ public class AccountService {
     return accountPrincipalRepository.findById(id).map(ap -> (AccountPrincipal<T>) ap);
   }
 
-  private Optional<AccountPrincipal<?>> findByMagicId(String magicId, LocalDateTime now) {
-    Optional<AccountPrincipal<?>> ap = accountPrincipalRepository.findByMagicId(magicId);
-    if (ap.isPresent()) {
-      AccountPrincipal<?> accountPrincipal = ap.get();
-      if (accountPrincipal.getMagicIdCreated().isBefore(now.minusDays(magicIdTimeoutDays))) {
-        throw new MagicIdExpiredException(String.format("Magic ID expired %s", accountPrincipal.getMagicIdCreated()));
-      } else {
-        return ap;
-      }
-    } else {
-      return Optional.empty();
-    }
-  }
-
   /**
    * Verifies the email address of the account with the given magicId. If the
    * magic ID is not found, an exception is thrown. If the magic ID is expired,
@@ -91,14 +77,19 @@ public class AccountService {
    * @param magicId
    * @param now     - current date and time
    */
-  public AccessToken verifyEmail(String magicId, LocalDateTime now) {
-    Optional<AccountPrincipal<?>> ap = findByMagicId(magicId, now);
+  public AccessToken verifyEmail(String magicId, LocalDateTime now)
+      throws MagicIdExpiredException, AccountNotFoundByMagicIdException {
+    Optional<AccountPrincipal<?>> ap = accountPrincipalRepository.findByMagicId(magicId);
     if (ap.isPresent()) {
       AccountPrincipal<?> accountPrincipal = ap.get();
-      accountPrincipal.setEmailVerified(now);
-      AccountPrincipal<?> savedAccountPrincipal = accountPrincipalRepository.save(accountPrincipal);
+      if (accountPrincipal.getMagicIdCreated().isBefore(now.minusDays(magicIdTimeoutDays))) {
+        throw new MagicIdExpiredException(String.format("Magic ID expired %s", accountPrincipal.getMagicIdCreated()));
+      } else {
+        accountPrincipal.setEmailVerified(now);
+        AccountPrincipal<?> savedAccountPrincipal = accountPrincipalRepository.save(accountPrincipal);
 
-      return generateAccessToken(savedAccountPrincipal);
+        return generateAccessToken(savedAccountPrincipal);
+      }
     } else {
       throw new AccountNotFoundByMagicIdException(magicId);
     }
@@ -111,6 +102,8 @@ public class AccountService {
    * @param magicLinkSender
    */
   public void sendMagicLink(AccountPrincipal<?> accountPrincipal, MagicLinkSender magicLinkSender) {
+    accountPrincipal.generateMagicId();
+    accountPrincipalRepository.save(accountPrincipal);
     magicLinkSender.deliver(accountPrincipal.getEmail(), accountPrincipal.getMagicId());
   }
 
