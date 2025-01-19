@@ -1,6 +1,7 @@
 package net.caimito.tokenweaver;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -31,17 +32,16 @@ public class AccountService {
    * @param additionalInformationClass
    * @return the new account
    */
-  public <T> AccountPrincipal<T> createAccount(String email, Class<T> additionalInformationClass) {
+  public <T> AccountPrincipal<T> createAccount(String email, Locale locale, T additionalInformation) {
     findAccountByEmail(email).ifPresent(ap -> {
       throw new AccountAlreadyExistsException(String.format("Account with email '%s' already exists", email));
     });
 
-    AccountPrincipal<T> accountPrincipal = new AccountPrincipal<>(email);
-    try {
-      accountPrincipal.setAdditionalInformation(additionalInformationClass.getDeclaredConstructor().newInstance());
-    } catch (Exception e) {
-      LOGGER.error("Error creating additional information", e);
-    }
+    AccountPrincipal<T> accountPrincipal = new AccountPrincipal.Builder<T>(
+        email, locale)
+        .withAdditionalInformation(additionalInformation)
+        .build();
+
     return accountPrincipalRepository.save(accountPrincipal);
   }
 

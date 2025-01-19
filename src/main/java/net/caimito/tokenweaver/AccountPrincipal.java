@@ -1,6 +1,7 @@
 package net.caimito.tokenweaver;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -26,14 +27,20 @@ public class AccountPrincipal<T> {
   private LocalDateTime magicIdCreated;
   private LocalDateTime emailVerified;
 
+  private Locale locale;
+  private PersonName personName;
+
   private T additionalInformation;
 
   @SuppressWarnings("unused")
   private AccountPrincipal() {
   }
 
-  public AccountPrincipal(String email) {
-    this.email = email;
+  private AccountPrincipal(Builder<T> builder) {
+    this.email = builder.email;
+    this.locale = builder.locale;
+    this.personName = builder.personName;
+    this.additionalInformation = builder.additionalInformation;
     generateMagicId();
   }
 
@@ -81,6 +88,41 @@ public class AccountPrincipal<T> {
 
   public void setAdditionalInformation(T additionalInformation) {
     this.additionalInformation = additionalInformation;
+  }
+
+  public PersonName getPersonName() {
+    return personName;
+  }
+
+  public Locale getLocale() {
+    return locale;
+  }
+
+  public static class Builder<T> {
+    private final String email;
+    private final Locale locale;
+    private PersonName personName;
+    private T additionalInformation;
+
+    public Builder(String email, Locale locale) {
+      this.email = email;
+      this.locale = locale;
+    }
+
+    public Builder<T> withPersonName(PersonName personName) {
+      this.personName = personName;
+      return this;
+    }
+
+    public Builder<T> withAdditionalInformation(T additionalInformation) {
+      this.additionalInformation = additionalInformation;
+      return this;
+    }
+
+    public AccountPrincipal<T> build() {
+      AccountPrincipal<T> principal = new AccountPrincipal<>(this);
+      return principal;
+    }
   }
 
   @Override

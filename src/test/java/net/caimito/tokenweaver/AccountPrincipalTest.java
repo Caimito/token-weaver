@@ -1,6 +1,8 @@
 package net.caimito.tokenweaver;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,12 +25,26 @@ public class AccountPrincipalTest {
   }
 
   @Test
-  void additionalInformation() {
-    AccountPrincipal<AdditionalInformation> accountPrincipal = new AccountPrincipal<>("joe@example.com");
+  void test() {
+    PersonName personName = new PersonName.Builder(new Locale("es", "ES"), "María")
+        .withMiddleName("Ana")
+        .withFamilyName("García")
+        .withSecondFamilyName("López")
+        .build();
 
-    accountPrincipal.setAdditionalInformation(new AdditionalInformation("value"));
-    AdditionalInformation info = accountPrincipal.getAdditionalInformation();
-    assertEquals("value", info.getSomeValue());
+    AdditionalInformation additionalInformation = new AdditionalInformation("Extra info");
+
+    AccountPrincipal<AdditionalInformation> account = 
+        new AccountPrincipal.Builder<AdditionalInformation>("test@example.com",
+            new Locale("es", "ES"))
+        .withPersonName(personName)
+        .withAdditionalInformation(additionalInformation)
+        .build();
+
+    assertThat(account.getEmail()).isEqualTo("test@example.com");
+    assertThat(account.getLocale()).isEqualTo(new Locale("es", "ES"));
+    assertThat(account.getPersonName().toString()).isEqualTo("María Ana García López");
+    assertThat(account.getAdditionalInformation().getSomeValue()).isEqualTo("Extra info");
   }
 
 }
