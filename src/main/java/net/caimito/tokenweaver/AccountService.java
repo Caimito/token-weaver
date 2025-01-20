@@ -29,7 +29,7 @@ public class AccountService {
    * verifies their email address.
    * 
    * @param email
-   * @param additionalInformationClass
+   * @param additionalInformation
    * @return the new account
    */
   public <T> AccountPrincipal<T> createAccount(String email, Locale locale, T additionalInformation) {
@@ -44,6 +44,8 @@ public class AccountService {
 
     return accountPrincipalRepository.save(accountPrincipal);
   }
+
+  // TODO: create with PersonName
 
   /**
    * Finds an account by email address.
