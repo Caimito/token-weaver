@@ -3,16 +3,20 @@ package net.caimito.tokenweaver;
 import java.util.Locale;
 
 public class PersonName {
-  private final Locale locale; // Locale for regional context
-  private final String firstName; // Given name
-  private final String middleName; // Middle name
-  private final String familyName; // Family or surname
-  private final String secondFamilyName; // Second family name (if applicable)
-  private final String patronymic; // Patronymic (e.g., Russia/Iceland)
-  private final String matronymic; // Matronymic (optional in some cultures)
-  private final String oriki; // Praise name (Yoruba culture)
-  private final String binOrBinti; // Bin/Binti for Arabic names
-  private final String additionalNames; // Other unconventional naming elements
+  private Locale locale; // Locale for regional context
+  private String firstName; // Given name
+  private String middleName; // Middle name
+  private String familyName; // Family or surname
+  private String secondFamilyName; // Second family name (if applicable)
+  private String patronymic; // Patronymic (e.g., Russia/Iceland)
+  private String matronymic; // Matronymic (optional in some cultures)
+  private String oriki; // Praise name (Yoruba culture)
+  private String binOrBinti; // Bin/Binti for Arabic names
+  private String additionalNames; // Other unconventional naming elements
+
+  @SuppressWarnings("unused")
+  private PersonName() {
+  }
 
   private PersonName(Builder builder) {
     this.locale = builder.locale;
