@@ -91,6 +91,9 @@ public class AccountPrincipal<T> {
   }
 
   public PersonName getPersonName() {
+    if (personName == null) {
+      personName = new PersonName.Builder(locale, "").build();
+    }
     return personName;
   }
 

@@ -48,13 +48,21 @@ public class AccountPrincipalTest {
   }
 
   @Test
-  void changePersonalName() {
+  void emptyPersonName() {
     AccountPrincipal<AdditionalInformation> account = new AccountPrincipal.Builder<AdditionalInformation>(
         "test@example.com",
         new Locale("es", "ES"))
         .build();
 
-    assertThat(account.getPersonName()).isNull();
+    assertThat(account.getPersonName()).isNotNull();
+  }
+
+  @Test
+  void changePersonalName() {
+    AccountPrincipal<AdditionalInformation> account = new AccountPrincipal.Builder<AdditionalInformation>(
+        "test@example.com",
+        new Locale("es", "ES"))
+        .build();
 
     PersonName personName = new PersonName.Builder(new Locale("es", "ES"), "María")
         .withMiddleName("Ana")
