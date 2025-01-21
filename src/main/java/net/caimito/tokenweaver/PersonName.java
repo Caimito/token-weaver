@@ -27,6 +27,46 @@ public class PersonName {
     this.additionalNames = builder.additionalNames;
   }
 
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getMiddleName() {
+    return middleName;
+  }
+
+  public String getFamilyName() {
+    return familyName;
+  }
+
+  public String getSecondFamilyName() {
+    return secondFamilyName;
+  }
+
+  public String getPatronymic() {
+    return patronymic;
+  }
+
+  public String getMatronymic() {
+    return matronymic;
+  }
+
+  public String getOriki() {
+    return oriki;
+  }
+
+  public String getBinOrBinti() {
+    return binOrBinti;
+  }
+
+  public String getAdditionalNames() {
+    return additionalNames;
+  }
+
+  public Locale getLocale() {
+    return locale;
+  }
+
   public String getFormattedName() {
     // Combine fields into a culturally appropriate full name
     StringBuilder nameBuilder = new StringBuilder();
