@@ -101,7 +101,8 @@ public class PersonName {
           nameBuilder.append(firstName).append(" ");
           if (middleName != null)
             nameBuilder.append(middleName).append(" ");
-          nameBuilder.append(familyName);
+          if (familyName != null)
+            nameBuilder.append(familyName);
           break;
       }
     }
